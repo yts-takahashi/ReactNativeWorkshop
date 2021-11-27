@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image,　RefreshControl, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { FAB } from 'react-native-elements';
+import { useIsFocused } from '@react-navigation/native';
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, query, orderBy, getDocs } from "firebase/firestore";
@@ -39,6 +40,8 @@ const DiaryItem = (props) => {
 
 export default function DiaryListScreen({navigation}) {
   const [diaries, setDiaries] = useState([]);
+  const isFocused = useIsFocused();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -52,7 +55,32 @@ export default function DiaryListScreen({navigation}) {
           createdAt: doc.get("createdAt").toDate(),
         })
       });
-      setDiaries(diaries)
+      setDiaries(diaries);
+    })();
+
+    navigation.addListener(
+      'willFocus',
+      payload => {
+        this.forceUpdate();
+      }
+    );
+  }, [isFocused]);
+
+  const refreshDiaries = React.useCallback(() => {
+    setRefreshing(true);
+    (async () => {
+      const querySnapshot = await getDocs(query(collection(db, `diaries`), orderBy("createdAt", "desc")))
+      const diaries = []
+      querySnapshot.forEach((doc) => {
+        diaries.push({
+          uid: doc.id,
+          title: doc.get("title"),
+          body: doc.get("body"),
+          createdAt: doc.get("createdAt").toDate(),
+        })
+      });
+      setDiaries(diaries);
+      setRefreshing(false);
     })();
   }, []);
 
@@ -68,7 +96,14 @@ export default function DiaryListScreen({navigation}) {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshDiaries}
+          />
+        }
+      >
         {renderDiaries()}
       </ScrollView>
       <FAB placement="right" color="#fff"
