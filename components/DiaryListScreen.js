@@ -5,11 +5,26 @@ import { StatusBar } from 'expo-status-bar';
 
 import { FAB } from 'react-native-elements';
 
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, query, orderBy, getDocs } from "firebase/firestore";
+
+// 以下は、アプリケーションをFirebaseに追加した際に表示されたものを利用しましょう。
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECKT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+initializeApp(firebaseConfig);
+const db = getFirestore();
+
 const DiaryItem = (props) => {
   const createdAt = props.diary.createdAt;
   const dayOfWeekStrJP = [ "日", "月", "火", "水", "木", "金", "土" ];
-  const createdAtString = `${createdAt.getFullYear()}/${createdAt.getMonth()+1}/${createdAt.getDate()}(${dayOfWeekStrJP[createdAt.getDay()]})`;
-  const image = props.diary.image
+  const createdAtString = `${createdAt.getFullYear()}/${createdAt.getMonth()+1}/${createdAt.getDate()}(${dayOfWeekStrJP[createdAt.getDay()]}) ${createdAt.getHours()}:${("00"+createdAt.getMinutes()).slice(-2)}`;
 
   return (
     <View style={styles.diaryItem}>
@@ -22,22 +37,24 @@ const DiaryItem = (props) => {
   );
 }
 
-export default function DiaryListScreen(navigation) {
+export default function DiaryListScreen({navigation}) {
   const [diaries, setDiaries] = useState([]);
 
   useEffect(() => {
-    const diaries = [];
-    for (let i = 0; i < 20; i++) {
-      diaries.push({
-        uid: i,
-        title: `タイトル${i}`,
-        body: `本文${i}`,
-        createdAt: new Date(),
-      })
-    }
-    setDiaries(diaries);
+    (async () => {
+      const querySnapshot = await getDocs(query(collection(db, `diaries`), orderBy("createdAt", "desc")))
+      const diaries = []
+      querySnapshot.forEach((doc) => {
+        diaries.push({
+          uid: doc.id,
+          title: doc.get("title"),
+          body: doc.get("body"),
+          createdAt: doc.get("createdAt").toDate(),
+        })
+      });
+      setDiaries(diaries)
+    })();
   }, []);
-
 
   const renderDiaries = () => diaries.map(
     diary => 
@@ -47,7 +64,6 @@ export default function DiaryListScreen(navigation) {
         navigation={navigation}
       />
   )
-  
 
   return (
     <View style={styles.container}>
@@ -63,6 +79,7 @@ export default function DiaryListScreen(navigation) {
             color:'#555',
           }
         }
+        onPress={() => {navigation.navigate("Register")}}
       />
     </View>
   )

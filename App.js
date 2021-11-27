@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from './components/LoginScreen';
 import DiaryListScreen from './components/DiaryListScreen';
+import RegisterDiaryScreen from './components/RegisterDiaryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,12 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginScreen}
+          options={{
+            ...headerOptions,
+            title: 'ログイン',
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={DiaryListScreen}
@@ -29,10 +36,10 @@ const App = () => {
             title: '日記一覧',
           }}
         />
-        <Stack.Screen name="Login" component={LoginScreen}
+        <Stack.Screen name="Register" component={RegisterDiaryScreen}
           options={{
             ...headerOptions,
-            title: 'ログイン画面',
+            title: '日記作成',
           }}
         />
       </Stack.Navigator>
