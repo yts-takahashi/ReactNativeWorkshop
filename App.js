@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>こんにちは!</Text>
+      <Text style={styles.text}>こんにちは!</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -18,4 +18,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // 以下を追加
+  text: {
+    fontSize: 40,
+    color: "#ff00ff",
+  }
 });
