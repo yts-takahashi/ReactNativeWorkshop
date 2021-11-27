@@ -1,24 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECKT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+import { DBContext } from '../contexts/DBContext';
 
-initializeApp(firebaseConfig);
-const db = getFirestore();
-  
 const RegisterDiaryScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const { db } = React.useContext(DBContext);
 
   const addDiary = (db, title, body) => {
     addDoc(collection(db, "diaries"), {

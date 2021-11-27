@@ -6,21 +6,9 @@ import { StatusBar } from 'expo-status-bar';
 import { FAB } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, query, orderBy, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
 
-// 以下は、アプリケーションをFirebaseに追加した際に表示されたものを利用しましょう。
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECKT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-initializeApp(firebaseConfig);
-const db = getFirestore();
+import { DBContext } from '../contexts/DBContext';
 
 const DiaryItem = (props) => {
   const createdAt = props.diary.createdAt;
@@ -42,6 +30,7 @@ export default function DiaryListScreen({navigation}) {
   const [diaries, setDiaries] = useState([]);
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
+  const { db } = React.useContext(DBContext);
 
   useEffect(() => {
     (async () => {
