@@ -9,6 +9,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
 
 import { DBContext } from '../contexts/DBContext';
+import { UserContext } from '../contexts/UserContext';
 
 const DiaryItem = (props) => {
   const createdAt = props.diary.createdAt;
@@ -36,10 +37,11 @@ export default function DiaryListScreen({navigation}) {
   const isFocused = useIsFocused();
   const [refreshing, setRefreshing] = useState(false);
   const { db } = React.useContext(DBContext);
+  const { uid } = React.useContext(UserContext);
 
   useEffect(() => {
     (async () => {
-      const querySnapshot = await getDocs(query(collection(db, `diaries`), orderBy("createdAt", "desc")))
+      const querySnapshot = await getDocs(query(collection(db, `diaries_${uid}`), orderBy("createdAt", "desc")))
       const diaries = []
       querySnapshot.forEach((doc) => {
         diaries.push({
