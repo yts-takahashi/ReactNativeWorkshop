@@ -6,15 +6,17 @@ import * as ImagePicker from 'expo-image-picker';
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 import { DBContext } from '../contexts/DBContext';
+import { UserContext } from '../contexts/UserContext';
 
 const RegisterDiaryScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [image, setImage] = useState(null);
+  const { uid } = React.useContext(UserContext);
   const { db } = React.useContext(DBContext);
 
   const addDiary = () => {
-    addDoc(collection(db, "diaries"), {
+    addDoc(collection(db, `diaries_${uid}`), {
       title: title,
       body: body,
       image: image,
