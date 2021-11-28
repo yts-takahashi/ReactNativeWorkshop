@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { StyleSheet, View, Text, Image,　RefreshControl, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity,　RefreshControl, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { FAB } from 'react-native-elements';
@@ -16,13 +16,18 @@ const DiaryItem = (props) => {
   const createdAtString = `${createdAt.getFullYear()}/${createdAt.getMonth()+1}/${createdAt.getDate()}(${dayOfWeekStrJP[createdAt.getDay()]}) ${createdAt.getHours()}:${("00"+createdAt.getMinutes()).slice(-2)}`;
 
   return (
-    <View style={styles.diaryItem}>
-      <Image resizeMode="contain" source={{ uri: props.diary.image }} style={ styles.diaryImage} />
-      <View style={styles.diaryTexts}>
-        <Text style={styles.diaryDate}>{createdAtString}</Text>
-        <Text style={styles.diaryTitle}>{props.diary.title}</Text>
+    <TouchableOpacity
+      onPress={() =>
+        props.navigation.navigate('Detail', { diary: props.diary })
+    }>
+      <View style={styles.diaryItem}>
+        <Image resizeMode="contain" source={{ uri: props.diary.image }} style={ styles.diaryImage} />
+        <View style={styles.diaryTexts}>
+          <Text style={styles.diaryDate}>{createdAtString}</Text>
+          <Text style={styles.diaryTitle}>{props.diary.title}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

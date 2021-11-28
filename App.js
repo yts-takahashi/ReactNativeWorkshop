@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './components/LoginScreen';
 import DiaryListScreen from './components/DiaryListScreen';
 import RegisterDiaryScreen from './components/RegisterDiaryScreen';
+import { DiaryDetailScreen } from './components/DiaryDetaliScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,12 @@ const App = () => {
           options={{
             ...headerOptions,
             title: '日記一覧',
+          }}
+        />
+        <Stack.Screen name="Detail" component={DiaryDetailScreen}
+          options={{
+            ...headerOptions,
+            title: '日記',
           }}
         />
         <Stack.Screen name="Register" component={RegisterDiaryScreen}
