@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { StyleSheet, Text, TextInput, Image, View, Button } from 'react-native';
+
+import * as ImagePicker from 'expo-image-picker';
 
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
@@ -8,18 +10,37 @@ import { DBContext } from '../contexts/DBContext';
 const RegisterDiaryScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [image, setImage] = useState(null);
   const { db } = React.useContext(DBContext);
 
-  const addDiary = (db, title, body) => {
+  const addDiary = () => {
     addDoc(collection(db, "diaries"), {
       title: title,
       body: body,
+      image: image,
       createdAt: Timestamp.now(),
     })
   }
 
+  const srcBase64Prefix = "data:image/gif;base64,";
+
   return (
     <View style={styles.container}>
+      {image && <Image resizeMode="contain" source={{ uri: image }} style={ styles.image } />}
+      <Button title="写真を選択" onPress={() => {
+        ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4,3],
+          base64: true,
+          quality:  1,
+        }).then(result => {
+          if (!result) return;
+          if (!result.cancelled) {
+            setImage(`${srcBase64Prefix}${result.base64}`);
+          }  
+        });
+      }} />
       <Text style={styles.label}>題名</Text>
       <TextInput
         label="題名"
@@ -41,7 +62,7 @@ const RegisterDiaryScreen = ({ navigation }) => {
         title="保存"
         color="#DF81A2"
         onPress={async () => {
-            await addDiary(db, title, body);
+            await addDiary();
             navigation.navigate('Home');
           }
         }
@@ -66,6 +87,10 @@ const styles = StyleSheet.create({
   bodyInput: {
     flexGrow: 1,
     marginBottom: 16,
+  },
+  image: {
+    width: "100%",
+    height: 128,
   },
 });
 

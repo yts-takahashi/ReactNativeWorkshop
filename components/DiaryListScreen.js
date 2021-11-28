@@ -17,7 +17,7 @@ const DiaryItem = (props) => {
 
   return (
     <View style={styles.diaryItem}>
-      <Image resizeMode="contain" source={require("../assets/logo.png")} style={ styles.diaryImage} />
+      <Image resizeMode="contain" source={{ uri: props.diary.image }} style={ styles.diaryImage} />
       <View style={styles.diaryTexts}>
         <Text style={styles.diaryDate}>{createdAtString}</Text>
         <Text style={styles.diaryTitle}>{props.diary.title}</Text>
@@ -41,6 +41,7 @@ export default function DiaryListScreen({navigation}) {
           uid: doc.id,
           title: doc.get("title"),
           body: doc.get("body"),
+          image: doc.get("image"),
           createdAt: doc.get("createdAt").toDate(),
         })
       });
@@ -65,6 +66,7 @@ export default function DiaryListScreen({navigation}) {
           uid: doc.id,
           title: doc.get("title"),
           body: doc.get("body"),
+          image: doc.get("image"),
           createdAt: doc.get("createdAt").toDate(),
         })
       });
