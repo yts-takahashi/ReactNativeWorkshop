@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable, TextInput, View, Image } from 'react-native';
+
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+
+import { firebaseConfig } from '../Config';
+import { UserContext } from '../contexts/UserContext';
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth();
+
 export default function LoginScreen({navigation}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser } = React.useContext(UserContext);
+
+  // ユーザ登録
+  const signUp = async () => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    return userCredential.user;
+  }
+
+  // メール＆パスワードログイン
+  const login = async() => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  }
+
   return (
     <View style={styles.main}>
       <Image source={require("../assets/logo.png")} style={ styles.logo } />
       <View style={styles.textContainer}>
         <TextInput
           style={styles.input}
+          value={email}
+          onChangeText={(email) => setEmail(email)}
           placeholder="Email"
           autoCapitalize="none"
           autoComplete="email"
@@ -18,6 +46,8 @@ export default function LoginScreen({navigation}) {
       <View style={styles.textContainer}>
         <TextInput
           style={styles.input}
+          value={password}
+          onChangeText={(password) => setPassword(password)}
           placeholder="Password"
           autoComplete="password"
           secureTextEntry
@@ -27,14 +57,32 @@ export default function LoginScreen({navigation}) {
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button}
           onPress={() => {
-            navigation.navigate("Home");
+            login()
+            .then( user => {
+              setUser(user);
+              navigation.navigate("Home");
+            }).catch(error => {
+              console.log(error);
+            });
           }}
         >
         <Text style={styles.buttonText}>Log in</Text>
         </Pressable>
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.button}>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            signUp()
+              .then( user => {
+                setUser(user);
+                navigation.navigate("Home");
+              })
+              .catch( error => {
+                console.log(error);
+              });
+          }}
+        >
           <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
       </View>
